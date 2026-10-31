@@ -6,6 +6,7 @@ check('mileage 2026 boundary',()=>{assert.equal(t.mileage(9440,2026),5192);asser
 check('historic mileage',()=>assert.equal(t.mileage(10001,2025),4500.25));
 check('tax boundary',()=>{assert.equal(t.tax(12570,2026).totalTax,0);assert.equal(t.tax(19793.74,2026).incomeTax,1444.75);assert.equal(t.tax(19793.74,2026).class4,433.42)});
 check('higher and additional bands',()=>{assert.equal(t.tax(60000,2026).incomeTax,11432);assert.ok(t.tax(150000,2026).incomeTax>45000)});
+check('130000 profit verified benchmark',()=>{const z=t.tax(130000,2026);assert.equal(z.incomeTax,44703);assert.equal(z.class4,3856.60);assert.equal(z.totalTax,48559.60)});
 check('allowance taper',()=>{assert.equal(t.tax(100000,2026).allowance,12570);assert.equal(t.tax(110000,2026).allowance,7570);assert.equal(t.tax(125140,2026).allowance,0)});
 check('year boundaries',()=>{assert.ok(t.inYear('2026-04-06',2026));assert.ok(t.inYear('2027-04-05',2026));assert.ok(!t.inYear('2026-04-05',2026));assert.ok(!t.inYear('2027-04-06',2026))});
 check('benchmark totals',()=>{const p=[{date:'2026-10-01',net:20136.96,cis:5034.24,miles:9440}],e=[{date:'2026-10-01',amount:185.46}];const s=t.summary(p,e,2026);assert.equal(s.turnover,25171.2);assert.equal(s.profit,19793.74);assert.equal(s.balance,-3156.07)});
