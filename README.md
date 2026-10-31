@@ -1,25 +1,28 @@
-# V6 Sites development update — 30 October 2026
+# Tax Tracker V6 — Friday Payments (Development only)
 
-This is a DEVELOPMENT package only; DO NOT deploy to live V5.
+Update dated 31 October 2026. NOT filing software. Do not upload personal tax JSON records to a public GitHub repository.
 
-Changes from the deployed V6 hotfix:
-- Sites form has optional **Contractor paying you** and **Principal contractor** fields.
-- Repeated site names are accepted; Friday dropdown distinguishes them by paying contractor.
-- New Friday normal payments snapshot both contractor labels from the chosen site. Existing V5 and V6 payment records are not backfilled with invented values. If an existing payment is edited without changing site, its historical contractor snapshots remain unchanged.
-- Editing site details does NOT rewrite historical payment snapshots or miles.
-- CSV import of a name shared by multiple sites is considered ambiguous and requires clarification rather than picking an arbitrary site. Use a distinct site name in CSV until future imports support IDs.
-- Expenses form mentions provisional business-use estimates, including home broadband **20%**; no percentages are silently applied to old records.
-- An explicit £130,000 trading profit test expects income tax £44,703, Class 4 NI £3,856.60, combined £48,559.60.
+## Changes
+- Friday payment selection is now **Normal** or **Additional**.
+- An optional payment note appears on both payment types.
+- New payments reconstruct CIS from bank receipts using the existing 20% default, without maintaining a running retention balance. For £760 bank receipt: £190 CIS, £950 cash-basis turnover.
+- The form shows bank received, CIS deducted and cash-basis turnover rather than contractual gross and retention.
+- Notes are saved in JSON backups and are exported/imported with an optional `Note` column in income CSV.
+- Original V5 `bonus` and `retention` types remain valid and display under Additional when editing; unchanged legacy financial amounts are preserved during note-only editing.
+- The existing Sites improvements and calculator remain included.
 
-Safety:
-- Uses the existing isolated V6 development localStorage key. Restore/backup formats remain compatible with V5 records.
-- Historical V5 fields, including gross/held/CIS, remain intact.
-- Tax calculations still use provisional cash-basis turnover `net + cis`, not the historical held amount.
-- No upload of personal JSON to GitHub. Before updating, export a fresh backup of V6 from its Summary.
-- New fields are optional to preserve all 17 historic sites.
+## Safeguards
+- This is a full development package, based on the V6 Site Edit Hotfix. Do not deploy to live V5.
+- Export a fresh V6 JSON backup from the iPhone before updating the dev repository.
+- Upload index.html, tax-engine.js, test-engine.js, test-sites.js, test-friday.js, manifest.webmanifest, README.md to **tax-tracker-v6-dev** root (replacing older copies).
+- Refresh development Safari tab and check Normal/Additional buttons, notes, Summary and prior records.
+- The app still lacks contractor-specific CIS selection and exemption/material deduction controls; use this development build only with the known 20% and no-other-deductions working model.
+- Older stored payments remain unchanged unless edited. New normal payment `gross` stores the amount before CIS (net+CIS), and `held` is zero; historical records retain their previous `gross` and `held`. Do not use the mixed `gross` fields as a consistent contractual-gross series. Use net+CIS for turnover.
+- No live repository actions performed.
 
-Deploy to tax-tracker-v6-dev only: replace index.html, tax-engine.js, test-engine.js, manifest.webmanifest, README.md in the development repo; DO NOT deploy to brum80/tax-tracker.
-
-Testing: `node test-engine.js`. User acceptance pending: edit a site, add two namesake sites with different payers, create a test payment, check its site/contractor record then delete it, export/restore a backup and verify 25 payments / 8 expenses / 17 original sites and the unchanged £3,156.07 illustration.
-
-Not yet implemented: CIS-rate selection by contractor, full MTD compliance, filing-stage rounding, external browser/device automation.
+## Tests run
+- `node test-engine.js` 16 calculation checks
+- `node test-sites.js` 6 site and migration checks
+- `node test-friday.js` 4 payment and legacy-compatibility checks
+- Extracted inline JavaScript passed `node --check`.
+- Browser touch interaction and full backup restore on iPhone are not tested yet for this version.

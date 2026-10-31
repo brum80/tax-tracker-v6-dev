@@ -19,6 +19,14 @@ function forecast(base,year,{weeks=0,weeklyNet=0,weeklyCis=0,extraMiles=0,extraE
  return {...t,turnover:projectedTurnover,cis:projectedCis,miles:projectedMiles,mileageCost:projectedMileage,allowable:projectedExpenses,balance:round(t.totalTax+n(opts.adjustments)-projectedCis-n(opts.otherCredits)-n(opts.paymentsOnAccount))};
 }
 function inYear(date,year){return typeof date==='string'&&date>=`${year}-04-06`&&date<=`${year+1}-04-05`}
-function payment(net,type,{retentionRate=5,cisRate=20}={}){net=n(net);const heldRate=type==='normal'?n(retentionRate)/100:0,rate=n(cisRate)/100;if(!['normal','bonus','retention'].includes(type)||net<0||heldRate<0||heldRate>=1||rate<0||rate>=1)throw Error('Invalid payment settings');const gross=round(net/((1-heldRate)*(1-rate))),held=round(gross*heldRate),cis=round((gross-held)*rate);return {gross,held,cis,turnover:round(net+cis),retentionRate:type==='normal'?n(retentionRate):0,cisRate:n(cisRate)}}
+function payment(net,type,{cisRate=20}={}){
+ net=Number(net);const rate=Number(cisRate)/100;
+ if(!['normal','additional','bonus','retention'].includes(type)||!Number.isFinite(net)||net<0||!Number.isFinite(rate)||rate<0||rate>=1)throw Error('Invalid payment settings');
+ // Cash-basis working model: retention already removed before CIS is applied.
+ // Legacy gross/held fields remain in imported historical records, unchanged.
+ const turnover=round(net/(1-rate));
+ const cis=round(turnover-net);
+ return {gross:turnover,held:0,cis,turnover,retentionRate:0,cisRate:Number(cisRate)};
+}
 root.TaxEngine={round,getRules,mileage,tax,summary,forecast,payment,inYear};
 })(typeof window!=='undefined'?window:globalThis);

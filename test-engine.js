@@ -1,5 +1,7 @@
 const assert=require('node:assert/strict');require('./tax-engine.js');const t=globalThis.TaxEngine;let count=0;function check(x,fn){fn();count++;console.log('PASS',x)}
-check('normal payment',()=>assert.deepEqual(t.payment(760,'normal'),{gross:1000,held:50,cis:190,turnover:950,retentionRate:5,cisRate:20}));
+check('normal payment',()=>assert.deepEqual(t.payment(760,'normal'),{gross:950,held:0,cis:190,turnover:950,retentionRate:0,cisRate:20}));
+check('additional payment',()=>assert.equal(t.payment(760,'additional').turnover,950));
+check('30% CIS rate',()=>assert.deepEqual([t.payment(700,'additional',{cisRate:30}).turnover,t.payment(700,'additional',{cisRate:30}).cis],[1000,300]));
 check('bonus payment',()=>assert.equal(t.payment(760,'bonus').turnover,950));
 check('retention release',()=>assert.equal(t.payment(40,'retention').turnover,50));
 check('mileage 2026 boundary',()=>{assert.equal(t.mileage(9440,2026),5192);assert.equal(t.mileage(10001,2026),5500.25);assert.equal(t.mileage(10000,2026),5500)});
