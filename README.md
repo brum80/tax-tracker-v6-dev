@@ -1,28 +1,12 @@
-# Tax Tracker V6 — Friday Payments (Development only)
+# Tax Tracker V6 — CIS Rate Update (DEV ONLY)
 
-Update dated 31 October 2026. NOT filing software. Do not upload personal tax JSON records to a public GitHub repository.
-
-## Changes
-- Friday payment selection is now **Normal** or **Additional**.
-- An optional payment note appears on both payment types.
-- New payments reconstruct CIS from bank receipts using the existing 20% default, without maintaining a running retention balance. For £760 bank receipt: £190 CIS, £950 cash-basis turnover.
-- The form shows bank received, CIS deducted and cash-basis turnover rather than contractual gross and retention.
-- Notes are saved in JSON backups and are exported/imported with an optional `Note` column in income CSV.
-- Original V5 `bonus` and `retention` types remain valid and display under Additional when editing; unchanged legacy financial amounts are preserved during note-only editing.
-- The existing Sites improvements and calculator remain included.
-
-## Safeguards
-- This is a full development package, based on the V6 Site Edit Hotfix. Do not deploy to live V5.
-- Export a fresh V6 JSON backup from the iPhone before updating the dev repository.
-- Upload index.html, tax-engine.js, test-engine.js, test-sites.js, test-friday.js, manifest.webmanifest, README.md to **tax-tracker-v6-dev** root (replacing older copies).
-- Refresh development Safari tab and check Normal/Additional buttons, notes, Summary and prior records.
-- The app still lacks contractor-specific CIS selection and exemption/material deduction controls; use this development build only with the known 20% and no-other-deductions working model.
-- Older stored payments remain unchanged unless edited. New normal payment `gross` stores the amount before CIS (net+CIS), and `held` is zero; historical records retain their previous `gross` and `held`. Do not use the mixed `gross` fields as a consistent contractual-gross series. Use net+CIS for turnover.
-- No live repository actions performed.
-
-## Tests run
-- `node test-engine.js` 16 calculation checks
-- `node test-sites.js` 6 site and migration checks
-- `node test-friday.js` 4 payment and legacy-compatibility checks
-- Extracted inline JavaScript passed `node --check`.
-- Browser touch interaction and full backup restore on iPhone are not tested yet for this version.
+- Payment note is shown only for **Additional** entries; on Normal payments it is hidden. Previously saved notes on Normal records are preserved when edited.
+- Friday form now has a CIS rate selector: **20% default**, **0%**, **30%**. Same Normal and Additional options.
+- New payments save the applied `cisRate` alongside the recorded net, CIS and turnover reconstruction. No retention ledger.
+- Existing V5 records remain unchanged unless edited. For legacy records with no rate, editing a note at 20% preserves the saved gross/CIS/retention amounts. Selecting a different rate intentionally recalculates the selected payment; check the contractor statement before doing so.
+- Optional income CSV column `CIS Rate` (0, 20, 30). Rows with unsupported rates are skipped; default is 20%.
+- For illustration: £700 net at 30% produces £300 CIS and £1,000 turnover; £700 net at 0% produces £0 CIS and £700 turnover. No other deductions or materials adjustments are supported.
+- The selected rate is a payment-level override, not automatically linked to site/contractor; contractor defaults can be considered later.
+- **Never deploy over live V5.** Make a fresh V6 JSON backup before replacing files in the separate `tax-tracker-v6-dev` repository.
+- Replace `index.html`, `tax-engine.js` and test files in the dev repository root. `manifest.webmanifest` unchanged. Keep your private backups out of public GitHub.
+- Automated tests are code-level only; test new 0%, 20%, 30% entries and editing on iPhone before treating the update as accepted. All tax estimates remain provisional.
